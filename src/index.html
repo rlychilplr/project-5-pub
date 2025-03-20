@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Cookie Clicker Clone in OOP</title>
+        <script src="js-cookie.js">
+            // this is a library, you can find it here:
+            // https://github.com/js-cookie/js-cookie or
+            // https://www.npmjs.com/package/js-cookie or
+            // https://www.jsdelivr.com/package/npm/js-cookie
+            // i just added it locally so i DONT HAVE TO DEAL WITH THE 8 SECOND NS-LOOKUP DELAY ON THIS BLASTED SCHOOL WIFI
+        </script>
+        <link rel="stylesheet" href="style.css" />
+        <link rel="icon" href="images/favicon.ico" />
+    </head>
+
+    <body>
+        <div class="sectionLeft">
+            <h1>Cookie Clicker</h1>
+            <div id="score">0 Cookies</div>
+            <div id="cps">Building Output: Loading</div>
+            <img
+                src="images/perfectCookie.png"
+                alt="cookie"
+                id="cookie"
+                draggable="false"
+            />
+            <!-- https://codepen.io/kevinpowell/pen/BavVLra adjusted it myself -->
+            <!-- then converted into a canvas by chatgpt bc the animation was tearing in chromium based browsers -->
+            <canvas id="milkCanvas" width="600" height="512"></canvas>
+        </div>
+        <div class="barVertical barLeft">
+            <img src="images/panelVertical.png" />
+        </div>
+        <div id="sectionMiddle">
+            <div id="top">
+                <div id="buttons">
+                    <button type="button" id="reset">Reset</button>
+                    <button type="button" id="options">Options</button>
+                    <button type="button" id="stats">Stats</button>
+                    <div id="resetModal" style="visibility: collapse">
+                        <div class="top-text">
+                            <h3>Wipe save</h3>
+                        </div>
+                        <div class="block">
+                            <div class="icon-TinyIcon"></div>
+                        </div>
+                        <div class="Center-text">
+                            <p>
+                                Are you sure you want to reset your progress?<br />
+                                This will completely delete your save.
+                            </p>
+                        </div>
+                        <button type="popup" id="confirm-reset">
+                            yes, delete
+                        </button>
+                        <button type="button" id="cancel-reset">cancel</button>
+                    </div>
+                </div>
+            </div>
+            <div class="barHorizontal barMiddleTop"></div>
+            <div id="buildingPanel" style="visibility: visible">
+                <div id="building0"></div>
+                <div class="barHorizontal buildingSeperator"></div>
+                <div id="building1"></div>
+                <div class="barHorizontal buildingSeperator"></div>
+                <div id="building2"></div>
+                <div class="barHorizontal buildingSeperator"></div>
+                <div id="building3"></div>
+                <div class="barHorizontal buildingSeperator"></div>
+                <div id="building4"></div>
+                <div class="barHorizontal buildingSeperator"></div>
+                <div id="building5"></div>
+                <div class="barHorizontal buildingSeperator"></div>
+                <div id="building6"></div>
+                <div class="barHorizontal buildingSeperator"></div>
+                <div id="building7"></div>
+                <div class="barHorizontal buildingSeperator"></div>
+            </div>
+            <div id="settingsPanel" style="visibility: collapse">
+                <h2>Settings</h2>
+                <button id="saveStats">Save Stats</button>
+            </div>
+
+            <div id="statsPanel" style="visibility: collapse">
+                <span id="statsCurrentCookies"
+                    >Current Cookies Owned:
+                    <img
+                        src="images/perfectCookie.png"
+                        style="width: 16px; height: 16px"
+                    />
+                    0</span
+                ><br />
+                <span id="statsTotalCookies"
+                    >Total Cookies Baked:
+                    <img
+                        src="images/perfectCookie.png"
+                        style="width: 16px; height: 16px"
+                    />
+                    0</span
+                ><br />
+                <span id="statsTotalClicks">Total Clicks: 0</span><br />
+                <span id="statsTotalPlaytime"
+                    >Total Playtime:
+                    <img
+                        src="images/perfectCookie.png"
+                        style="width: 16px; height: 16px"
+                    />0</span
+                ><br />
+            </div>
+        </div>
+        <div class="barVertical barRight">
+            <img src="images/panelVertical.png" />
+        </div>
+        <div id="sectionRight">
+            <p class="shop">shop</p>
+            <img src="images/panelHorizontal.png" width="300px" height="16" />
+            <div class="grid-container">
+                <div class="grid-item upgradeBuilding" id="themeSelectorIcon">
+                    <div class="side-menu">
+                        <div id="bgRed" class="themeSelectorOptions"></div>
+                        <div id="bgSnow" class="themeSelectorOptions"></div>
+                        <div id="bgGold" class="themeSelectorOptions"></div>
+                        <div id="bgMint" class="themeSelectorOptions"></div>
+                        <div id="bgMoney" class="themeSelectorOptions"></div>
+                        <div id="bgPink" class="themeSelectorOptions"></div>
+                        <div id="bgPurple" class="themeSelectorOptions"></div>
+                        <div id="bgSilver" class="themeSelectorOptions"></div>
+                        <div id="bgSky" class="themeSelectorOptions"></div>
+                    </div>
+                </div>
+                <div
+                    class="grid-item upgradeBuilding"
+                    id="milkColorSelectorIcon"
+                >
+                    <div class="side-bottom">
+                        <div
+                            id="milkPlain"
+                            class="milkColorSelectorOptions"
+                        ></div>
+                        <div
+                            id="milkBlueFire"
+                            class="milkColorSelectorOptions"
+                        ></div>
+                        <div
+                            id="milkOrange"
+                            class="milkColorSelectorOptions"
+                        ></div>
+                        <div
+                            id="milkHazelnut"
+                            class="milkColorSelectorOptions"
+                        ></div>
+                        <div
+                            id="milkPeach"
+                            class="milkColorSelectorOptions"
+                        ></div>
+                        <div
+                            id="milkZebra"
+                            class="milkColorSelectorOptions"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+            <img src="images/panelHorizontal.png" width="300px" height="16" />
+            <div id="buildings">
+                <div id="product0" class="product">
+                    <div id="productIcon0"></div>
+                    <div class="temp"></div>
+                    <table>
+                        <tr>
+                            <td class="Item" colspan="2">Cursor</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img
+                                    src="images/perfectCookie.png"
+                                    style="width: 16px; height: 16px"
+                                />
+                            </td>
+                            <td class="BuildingPrice" id="buildingPrice0">
+                                price
+                            </td>
+                        </tr>
+                    </table>
+                    <p id="product0Amount" class="productAmount">0</p>
+                    <div class="product-info">
+                        <div class="info-content">
+                            <h3>Building Info</h3>
+                            <p class="cps-info"></p>
+                            <p class="total-cps-info"></p>
+                            <p class="owned-info"></p>
+                        </div>
+                    </div>
+                </div>
+                <div id="product1" class="product">
+                    <div id="productIcon1"></div>
+                    <div class="temp"></div>
+                    <table>
+                        <tr>
+                            <td class="Item" colspan="2">Grandma</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img
+                                    src="images/perfectCookie.png"
+                                    style="width: 16px; height: 16px"
+                                />
+                            </td>
+                            <td class="BuildingPrice" id="buildingPrice1">
+                                price
+                            </td>
+                        </tr>
+                    </table>
+                    <p id="product1Amount" class="productAmount">0</p>
+                    <div class="product-info">
+                        <div class="info-content">
+                            <h3>Building Info</h3>
+                            <p class="cps-info"></p>
+                            <p class="total-cps-info"></p>
+                            <p class="owned-info"></p>
+                        </div>
+                    </div>
+                </div>
+                <div id="product2" class="product">
+                    <div id="productIcon2"></div>
+                    <div class="temp"></div>
+                    <table>
+                        <tr>
+                            <td class="Item" colspan="2">Farm</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img
+                                    src="images/perfectCookie.png"
+                                    style="width: 16px; height: 16px"
+                                />
+                            </td>
+                            <td class="BuildingPrice" id="buildingPrice2">
+                                price
+                            </td>
+                        </tr>
+                    </table>
+                    <p id="product2Amount" class="productAmount">0</p>
+                    <div class="product-info">
+                        <div class="info-content">
+                            <h3>Building Info</h3>
+                            <p class="cps-info"></p>
+                            <p class="total-cps-info"></p>
+                            <p class="owned-info"></p>
+                        </div>
+                    </div>
+                </div>
+                <div id="product3" class="product">
+                    <div id="productIcon3"></div>
+                    <div class="temp"></div>
+                    <table>
+                        <tr>
+                            <td class="Item" colspan="2">Mine</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img
+                                    src="images/perfectCookie.png"
+                                    style="width: 16px; height: 16px"
+                                />
+                            </td>
+                            <td class="BuildingPrice" id="buildingPrice3">
+                                price
+                            </td>
+                        </tr>
+                    </table>
+                    <p id="product3Amount" class="productAmount">0</p>
+                    <div class="product-info">
+                        <div class="info-content">
+                            <h3>Building Info</h3>
+                            <p class="cps-info"></p>
+                            <p class="total-cps-info"></p>
+                            <p class="owned-info"></p>
+                        </div>
+                    </div>
+                </div>
+                <div id="product4" class="product">
+                    <div id="productIcon4"></div>
+                    <div class="temp"></div>
+                    <table>
+                        <tr>
+                            <td class="Item" colspan="2">Factory</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img
+                                    src="images/perfectCookie.png"
+                                    style="width: 16px; height: 16px"
+                                />
+                            </td>
+                            <td class="BuildingPrice" id="buildingPrice4">
+                                price
+                            </td>
+                        </tr>
+                    </table>
+                    <p id="product4Amount" class="productAmount">0</p>
+                    <div class="product-info">
+                        <div class="info-content">
+                            <h3>Building Info</h3>
+                            <p class="cps-info"></p>
+                            <p class="total-cps-info"></p>
+                            <p class="owned-info"></p>
+                        </div>
+                    </div>
+                </div>
+                <div id="product5" class="product">
+                    <div id="productIcon5"></div>
+                    <div class="temp"></div>
+                    <table>
+                        <tr>
+                            <td class="Item" colspan="2">Bank</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img
+                                    src="images/perfectCookie.png"
+                                    style="width: 16px; height: 16px"
+                                />
+                            </td>
+                            <td class="BuildingPrice" id="buildingPrice5">
+                                price
+                            </td>
+                        </tr>
+                    </table>
+                    <p id="product5Amount" class="productAmount">0</p>
+                    <div class="product-info">
+                        <div class="info-content">
+                            <h3>Building Info</h3>
+                            <p class="cps-info"></p>
+                            <p class="total-cps-info"></p>
+                            <p class="owned-info"></p>
+                        </div>
+                    </div>
+                </div>
+                <div id="product6" class="product">
+                    <div id="productIcon6"></div>
+                    <div class="temp"></div>
+                    <table>
+                        <tr>
+                            <td class="Item" colspan="2">Temple</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img
+                                    src="images/perfectCookie.png"
+                                    style="width: 16px; height: 16px"
+                                />
+                            </td>
+                            <td class="BuildingPrice" id="buildingPrice6">
+                                price
+                            </td>
+                        </tr>
+                    </table>
+                    <p id="product6Amount" class="productAmount">0</p>
+                    <div class="product-info">
+                        <div class="info-content">
+                            <h3>Building Info</h3>
+                            <p class="cps-info"></p>
+                            <p class="total-cps-info"></p>
+                            <p class="owned-info"></p>
+                        </div>
+                    </div>
+                </div>
+                <div id="product7" class="product">
+                    <div id="productIcon7"></div>
+                    <div class="temp"></div>
+                    <table>
+                        <tr>
+                            <td class="Item" colspan="2">Wizard tower</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img
+                                    src="images/perfectCookie.png"
+                                    style="width: 16px; height: 16px"
+                                />
+                            </td>
+                            <td class="BuildingPrice" id="buildingPrice7">
+                                price
+                            </td>
+                        </tr>
+                    </table>
+                    <p id="product7Amount" class="productAmount">0</p>
+                    <div class="product-info">
+                        <div class="info-content">
+                            <h3>Building Info</h3>
+                            <p class="cps-info"></p>
+                            <p class="total-cps-info"></p>
+                            <p class="owned-info"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="script.js"></script>
+    </body>
+</html>
