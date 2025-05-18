@@ -6,6 +6,8 @@ Cookie clicer
 
 Dit was een team project, ik heb aan dit project samen gewerkt met nathan
 
+Ik zou aanraden om de html niet direct te openen, maar via een host (npm, nginx, apache, xampp, mamp, etc.)
+
 ## upgrade costs
 
 Price=`Base cost*1.15^M`
